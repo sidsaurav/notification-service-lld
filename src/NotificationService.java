@@ -1,5 +1,6 @@
 import entities.User;
 import enums.NotificationType;
+import factory.NotificationStrategyFactory;
 import strategies.EmailStrategy;
 import strategies.NotificationStrategy;
 import strategies.PushStrategy;
@@ -42,28 +43,12 @@ public class NotificationService {
     public void publishNotification(NotificationType notificationType, String message) {
         for (var userId : notificationMap.keySet()) {
             if (notificationMap.get(userId).contains(notificationType)) {
-                switch (notificationType) {
-                    case NotificationType.SMS:
-                        NotificationStrategy smsStrategy = new SMSStrategy();
-                        smsStrategy.sendNotification(message);
-                        break;
-                }
-
-                switch (notificationType) {
-                    case NotificationType.EMAIL:
-                        NotificationStrategy emailStrategy = new EmailStrategy();
-                        emailStrategy.sendNotification(message);
-                        break;
-                }
-
-                switch (notificationType) {
-                    case NotificationType.SMS:
-                        NotificationStrategy pushStrategy = new PushStrategy();
-                        pushStrategy.sendNotification(message);
-                        break;
-                }
+                NotificationStrategy ntf = NotificationStrategyFactory.getStrategy(notificationType);
+                ntf.sendNotification(message);
             }
         }
+
+        System.out.println("Notification published");
     }
 }
 
